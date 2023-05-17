@@ -22,6 +22,7 @@ def create_journal_entry(user_id):
     if result.modified_count > 0:
         return jsonify({"message": "Journal entry created successfully"}), 201
     else:
+        print(result.raw_result)
         return jsonify({"message": "Something went wrong. Failed to create journal entry"}), 500
 
 
