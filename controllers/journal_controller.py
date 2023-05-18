@@ -11,6 +11,7 @@ def create_journal_entry(user_id):
         date=data["date"],
         description=data["description"],
         mood_value=data["mood_value"],
+        mood_score=data["mood_score"],
     )
 
     result = journal_collection.update_one(

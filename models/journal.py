@@ -7,6 +7,7 @@ class JournalEntry(BaseModel):
     date: datetime
     description: str
     mood_value: str = Field(..., alias="mood_value")
+    mood_score: float = Field(..., alias="mood_score")
 
 
 class JournalModel(BaseModel):
@@ -18,6 +19,7 @@ class CreateJournalEntryRequest(BaseModel):
     date: datetime
     description: str
     mood_value: str = Field(..., alias="mood_value")
+    mood_score: float = Field(..., alias="mood_score") 
 
 
 class CreateJournalEntryResponse(BaseModel):
