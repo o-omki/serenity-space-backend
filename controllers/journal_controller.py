@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from flask import jsonify, request
 from models.journal import JournalEntry
 from utils.database import get_journal_collection
@@ -23,7 +24,6 @@ def create_journal_entry(user_id):
     if result.modified_count > 0:
         return jsonify({"message": "Journal entry created successfully"}), 201
     else:
-        print(result.raw_result)
         return jsonify({"message": "Something went wrong. Failed to create journal entry"}), 500
 
 
@@ -37,6 +37,39 @@ def get_journal(user_id):
         return jsonify({"message": "Journal not found"}), 404
 
 
+def get_journal_for_mood_graph(user_id):
+    jourrnal_collection = get_journal_collection()
+    print(user_id);
+
+    today = datetime.now()
+    last_week = today - timedelta(days=7)
+
+    query = {
+        "_id": user_id,
+        "journal_entries.date": {
+            "$gte": last_week, #.strftime("%Y-%m-%d"),  # last week
+            "$lte": today #.strftime("%Y-%m-%d"),  # today
+        },
+    }
+
+    result = jourrnal_collection.find_one(query)
+
+    if result is not None:
+        journal_entries = result["journal_entries"]
+        mood_graph_scores = []
+
+        for entry in journal_entries:
+            day_of_week = entry["date"].strftime("%a")
+            mood_score = entry["mood_score"]
+            mood_graph_scores.append({"day": day_of_week, "mood_score": mood_score})
+        
+        return jsonify(mood_graph_scores), 200
+    else:
+        return jsonify({"message": "Journal entries not found"}), 404
+
+
+
+
 def delete_journal_entry(user_id, entry_date):
     journal_collection = get_journal_collection()
     result = journal_collection.update_one(
@@ -45,7 +78,7 @@ def delete_journal_entry(user_id, entry_date):
 
         },
         {
-            "$pull": 
+            "$pull":
             {
                 "journal_entries": {"date": entry_date}
             }
