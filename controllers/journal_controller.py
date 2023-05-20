@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from flask import jsonify, request
 from models.journal import JournalEntry
 from utils.database import get_journal_collection
+from tensorflow_model import predict_journal_mood
 
 
 def create_journal_entry(user_id):
@@ -12,11 +13,12 @@ def create_journal_entry(user_id):
         date=data["date"],
         description=data["description"],
         mood_value=data["mood_value"],
-        mood_score=data["mood_score"],
+        mood_score=predict_journal_mood(data["description"]),
     )
 
     result = journal_collection.update_one(
-        {"_id": user_id},
+        # TODO: Insert only if date doesn't exist else update
+        {"_id": user_id, },
         {"$push": {"journal_entries": journal_entry.__dict__}},
         upsert=True,
     )
