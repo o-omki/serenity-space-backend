@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import jsonify, request
 from models.user import User
 from utils.database import get_user_collection
+from pymongo import collection
 
 
 def create_user():
@@ -60,11 +61,11 @@ def update_user(user_id):
     }
 
     user_collection = get_user_collection()
-    result = user_collection.update_one(
-        {"_id": user_id}, {"$set": updated_user})
+    result = user_collection.find_one_and_update(
+        {"_id": user_id}, {"$set": updated_user}, return_document=collection.ReturnDocument.AFTER)
 
     if result.modified_count > 0:
-        return jsonify({"message": "User updated successfully"}), 200
+        return jsonify(result), 200
     else:
         return jsonify({"message": "User not found"}), 404
 
