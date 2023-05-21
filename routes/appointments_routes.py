@@ -8,7 +8,7 @@ def create_user_appointment():
     return create_appointment()
 
 @appointment_routes.route("/appointments/<appointment_id>", methods=["PUT"])
-def get_user_appointment(appointment_id):
+def update_user_appointment(appointment_id):
     return update_appointment(appointment_id)
 
 @appointment_routes.route("/appointments/<appointment_id>", methods=["DELETE"])
