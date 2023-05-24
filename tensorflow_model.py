@@ -13,7 +13,7 @@ model = None
 def openai_sentiment_analyser(journal_input: str):
     response = openai.Completion.create(
     model="text-davinci-003",
-    prompt=f"I want you to act like a sentiment analyser of a text. You are the best and most accurate sentiment analyser. \n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How can I help you today?\nHuman: I want you to analyse the following text and generate a sentiment score between 1 to 100 with 100 being for the most positive. Respond with just Score:score_value. The text is {journal_input}.\nAI:",
+    prompt=f"I want you to act like a sentiment analyser of a text. You are the best and most accurate sentiment analyser. \n\nHuman: I want you to analyse the following text and generate a sentiment score between 1 to 100 with 100 being for the most positive. Score it really well and it can be a float value and just just multiples of 10. Respond with just Score:score_value. The text is {journal_input}.\nAI:",
     temperature=0.9,
     max_tokens=150,
     top_p=1,
@@ -25,9 +25,9 @@ def openai_sentiment_analyser(journal_input: str):
     
     # if score contains only numbers except for . then return int(score) else remove all non numeric characters except . and return int(score)
     if score.replace(".", "").isnumeric():
-        return int(score)
+        return round(float(score))
     else:
-        return int("".join(filter(str.isdigit, score)))
+        return float("".join(filter(str.isdigit, score)))
     
 
 
