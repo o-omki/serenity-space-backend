@@ -21,7 +21,7 @@ def openai_sentiment_analyser(journal_input: str):
     presence_penalty=0.6,
     stop=[" Human:", " AI:"]
     )
-    score = response.get("choices")[0].get("text").split("Score:")[1].strip()
+    score = response.get("choices")[0].get("text").split("Score:")[1].strip() # type: ignore
     
     # if score contains only numbers except for . then return int(score) else remove all non numeric characters except . and return int(score)
     if score.replace(".", "").isnumeric():
@@ -47,7 +47,7 @@ def predict_journal_mood(journal_input: str):
     print("Predicting mood for journal entry: " + journal_input)
     try:
         return openai_sentiment_analyser(journal_input)
-    except openai.error.APIError as e:
+    except openai.error.APIError as e: # type: ignore
         print("OpenAI API Error: " + str(e))
         print("Waiting for 5 seconds and trying again")
         time.sleep(5)
