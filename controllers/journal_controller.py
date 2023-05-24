@@ -8,20 +8,25 @@ from tensorflow_model import predict_journal_mood
 def create_journal_entry(user_id):
     data = request.get_json()
 
+    # Exception handling for predict_journal_mood if it raises an exception
     journal_collection = get_journal_collection()
-    journal_entry = JournalEntry(
-        date=data["date"],
-        description=data["description"],
-        mood_value=data["mood_value"],
-        mood_score=predict_journal_mood(data["description"]),
-    )
-
-    result = journal_collection.update_one(
-        # TODO: Insert only if date doesn't exist else update
-        {"_id": user_id, },
-        {"$push": {"journal_entries": journal_entry.__dict__}},
-        upsert=True,
-    )
+    try:
+        journal_entry = JournalEntry(
+            date=data["date"],
+            description=data["description"],
+            mood_value=data["mood_value"],
+            mood_score=predict_journal_mood(data["description"]),
+        )
+    except Exception as e:
+        print("Error: " + str(e))
+        return jsonify({"message": "Something went wrong. Failed to create journal entry"}), 500
+    else:
+        result = journal_collection.update_one(
+            # TODO: Insert only if date doesn't exist else update
+            {"_id": user_id, },
+            {"$push": {"journal_entries": journal_entry.__dict__}},
+            upsert=True,
+        )
 
     if result.modified_count > 0:
         return jsonify({"message": "Journal entry created successfully"}), 201
